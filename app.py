@@ -359,7 +359,7 @@ with tab4:
     - NHANES uses complex survey sampling; this analysis does not apply survey weights
 
     ### Built by
-    UCLA M.S. Data Science in Health | BIOSTAT 212B Extra Credit Project
+    Peixuan Zang, UCLA M.S. Data Science in Health | BIOSTAT 212B Extra Credit Project
 
     **Tools:** Python · Scikit-learn · XGBoost · SHAP · Streamlit · NHANES (CDC)
     """)
