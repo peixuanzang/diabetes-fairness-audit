@@ -1,0 +1,22 @@
+n,prevalence,auc,tpr,fpr,fnr,ppv,model,race_code,race_label
+1385,0.193,0.781,0.139,0.039,0.861,0.457,Logistic Regression,Overall,Overall
+153,0.229,0.84,0.114,0.008,0.886,0.8,Logistic Regression,1.0,Mexican American
+122,0.197,0.746,0.042,0.02,0.958,0.333,Logistic Regression,2.0,Other Hispanic
+514,0.161,0.779,0.193,0.053,0.807,0.41,Logistic Regression,3.0,Non-Hispanic White
+349,0.232,0.779,0.148,0.063,0.852,0.414,Logistic Regression,4.0,Non-Hispanic Black
+167,0.192,0.819,0.031,0.0,0.969,1.0,Logistic Regression,6.0,Non-Hispanic Asian
+80,0.15,0.804,0.25,0.015,0.75,0.75,Logistic Regression,7.0,Other/Multiracial
+1385,0.193,0.765,0.191,0.055,0.809,0.455,Random Forest,Overall,Overall
+153,0.229,0.81,0.143,0.042,0.857,0.5,Random Forest,1.0,Mexican American
+122,0.197,0.691,0.042,0.092,0.958,0.1,Random Forest,2.0,Other Hispanic
+514,0.161,0.782,0.253,0.063,0.747,0.438,Random Forest,3.0,Non-Hispanic White
+349,0.232,0.751,0.222,0.063,0.778,0.514,Random Forest,4.0,Non-Hispanic Black
+167,0.192,0.767,0.125,0.015,0.875,0.667,Random Forest,6.0,Non-Hispanic Asian
+80,0.15,0.808,0.167,0.015,0.833,0.667,Random Forest,7.0,Other/Multiracial
+1385,0.193,0.743,0.228,0.078,0.772,0.412,XGBoost,Overall,Overall
+153,0.229,0.826,0.257,0.034,0.743,0.692,XGBoost,1.0,Mexican American
+122,0.197,0.648,0.125,0.082,0.875,0.273,XGBoost,2.0,Other Hispanic
+514,0.161,0.748,0.301,0.09,0.699,0.391,XGBoost,3.0,Non-Hispanic White
+349,0.232,0.737,0.21,0.097,0.79,0.395,XGBoost,4.0,Non-Hispanic Black
+167,0.192,0.746,0.125,0.052,0.875,0.364,XGBoost,6.0,Non-Hispanic Asian
+80,0.15,0.783,0.25,0.044,0.75,0.5,XGBoost,7.0,Other/Multiracial
