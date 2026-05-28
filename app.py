@@ -248,42 +248,118 @@ with tab3:
 # ════════════════════════════════════════════════════════
 with tab4:
     st.header("About This Project")
+
     st.markdown("""
     ### Motivation
-    AI models trained on population-level data can perform unevenly across demographic groups —
-    a phenomenon known as **algorithmic bias**. In healthcare, this can mean that certain populations
-    are more likely to be missed by a diagnostic model, leading to delayed treatment.
+    Machine learning models are increasingly used in clinical decision support —
+    from predicting disease risk to recommending treatments. But a model that performs
+    well *on average* can still fail specific populations systematically.
 
-    This project audits three commonly used machine learning models for diabetes risk prediction,
-    examining whether they perform equitably across racial and ethnic groups.
+    This project asks a simple but critical question:
 
+    > **Does a diabetes risk prediction AI perform equally well for all racial and ethnic groups?**
+
+    Using a nationally representative U.S. health survey, we train three commonly used
+    ML models and audit their performance across six racial/ethnic groups — measuring not
+    just accuracy, but *who gets missed*.
+    """)
+
+    st.divider()
+
+    st.markdown("""
     ### Data
-    - **Source:** NHANES 2017–March 2020 Pre-Pandemic (CDC)
+    - **Source:** [NHANES 2017–March 2020 Pre-Pandemic](https://wwwn.cdc.gov/nchs/nhanes/) (CDC)
     - **Sample:** 6,922 U.S. adults aged 18+
-    - **Diabetes label:** Self-reported diagnosis OR HbA1c ≥ 6.5% OR fasting glucose ≥ 126 mg/dL
-    - **Features used:** Age, gender, BMI, systolic BP, diastolic BP, income-to-poverty ratio
+    - **Diabetes label:** Self-reported diagnosis **OR** HbA1c ≥ 6.5% **OR** fasting glucose ≥ 126 mg/dL
+    - **Prediction features:** Age, gender, BMI, systolic BP, diastolic BP, income-to-poverty ratio
 
-    ### Models
-    | Model | Overall AUC |
-    |-------|-------------|
-    | Logistic Regression | 0.781 |
-    | Random Forest | 0.765 |
-    | XGBoost | 0.743 |
+    > Note: HbA1c and fasting glucose were used only to define the outcome label,
+    > not as model inputs, to avoid data leakage.
+    """)
 
-    ### Fairness Metrics
-    - **AUC:** Overall discrimination ability
-    - **TPR (Sensitivity):** Among people *with* diabetes, how many does the model correctly flag?
-    - **FNR (Miss Rate):** Among people *with* diabetes, how many does the model miss? *(Lower is better)*
-    - **FPR (False Alarm Rate):** Among people *without* diabetes, how many does the model falsely flag?
+    st.divider()
 
-    ### Key Finding
-    Non-Hispanic Asian and Other Hispanic patients show miss rates exceeding 95% under
-    Logistic Regression — suggesting the model systematically underperforms for these groups.
-    SHAP analysis reveals that age and BMI contribute differently across groups, potentially
-    reflecting known clinical differences (e.g., diabetes onset at lower BMI in Asian populations).
+    st.markdown("""
+    ### Models & Overall Performance
+
+    | Model | AUC | Notes |
+    |-------|-----|-------|
+    | Logistic Regression | 0.781 | Highest AUC; best overall discrimination |
+    | Random Forest | 0.765 | Used for SHAP explanations |
+    | XGBoost | 0.743 | Most aggressive in flagging positives |
+
+    All three models were trained on 80% of the data and evaluated on a held-out 20% test set,
+    with stratified sampling to preserve the 19.3% diabetes prevalence.
+    """)
+
+    st.divider()
+
+    st.markdown("""
+    ### Key Findings
+
+    #### 1. Miss rates vary dramatically across racial groups
+    The most striking finding is the **False Negative Rate (FNR)** — the proportion of
+    diabetes patients the model *fails to detect*. Under Logistic Regression:
+
+    | Group | Miss Rate (FNR) |
+    |-------|----------------|
+    | Non-Hispanic White | 80.7% |
+    | Non-Hispanic Black | 85.2% |
+    | Mexican American | 88.6% |
+    | Other Hispanic | **95.8%** |
+    | Non-Hispanic Asian | **96.9%** |
+
+    **Non-Hispanic Asian and Other Hispanic patients are nearly invisible to the model.**
+    Almost every diabetic patient in these groups is missed at the standard 0.5 threshold.
+
+    #### 2. SHAP reveals why: BMI means different things to different groups
+    SHAP analysis shows that **BMI is the second most influential feature overall**, but its
+    impact varies significantly by group:
+    - For **Non-Hispanic Black** patients, BMI has the highest SHAP influence (0.075) —
+      the model learned a strong BMI–diabetes signal in this group.
+    - For **Non-Hispanic Asian** patients, BMI contributes much less (0.057) —
+      consistent with clinical evidence that Asian populations develop diabetes at
+      **lower BMI thresholds** than Western norms assume.
+
+    The model was trained on a majority-White dataset and learned BMI cutoffs that reflect
+    White and Black population patterns. When applied to Asian patients with "normal"
+    BMI but elevated diabetes risk, the model systematically underestimates their risk.
+
+    #### 3. Age is universally important — but weakest for Asian patients
+    Age is the top predictor across all groups, but its SHAP contribution is lowest for
+    Non-Hispanic Asian patients (0.081 vs. 0.103 for White). This suggests the model
+    has not adequately learned the age–diabetes relationship in this population,
+    likely due to smaller sample size (n=167 vs. n=514 for White).
+
+    #### 4. No single model is "fair"
+    Switching from Logistic Regression to XGBoost slightly improves Asian miss rates
+    (96.9% → 87.5%), but overall disparities persist across all three models.
+    This suggests the problem is rooted in **data representation**, not model choice.
+    """)
+
+    st.divider()
+
+    st.markdown("""
+    ### Implications for Clinical AI
+    These findings have real-world consequences. A diabetes screening tool deployed in
+    a diverse clinical setting would:
+    - Miss nearly all Asian diabetic patients at standard thresholds
+    - Perform best for Non-Hispanic White patients, who are most represented in the training data
+
+    Potential mitigation strategies include:
+    - **Group-specific thresholds:** Lower the classification threshold for high-risk groups
+    - **Oversampling minority groups** during training
+    - **Adding race-aware features** (e.g., ethnicity-adjusted BMI cutoffs)
+    - **Fairness constraints** during model training (e.g., equalized odds)
+
+    ### Limitations
+    - Features are limited to demographic and basic clinical variables; important predictors
+      like diet, physical activity, and family history are not included
+    - Sample sizes for some groups (e.g., Other Hispanic, n=122) are relatively small
+    - NHANES uses complex survey sampling; this analysis does not apply survey weights
 
     ### Built by
     UCLA M.S. Data Science in Health | BIOSTAT 212B Extra Credit Project
 
-    **Tools:** Python, Scikit-learn, XGBoost, SHAP, Streamlit, NHANES (CDC)
+    **Tools:** Python · Scikit-learn · XGBoost · SHAP · Streamlit · NHANES (CDC)
     """)
